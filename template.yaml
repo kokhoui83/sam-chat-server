@@ -27,7 +27,7 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: chat/
-      Handler: app.getChats
+      Handler: app.getChat
       Runtime: python3.8
       Events:
         RetrieveChat:
@@ -35,6 +35,18 @@ Resources:
           Properties:
             Path: /chat
             Method: get
+  PostChatFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: chat/
+      Handler: app.postChat
+      Runtime: python3.8
+      Events:
+        RetrieveChat:
+          Type: Api
+          Properties:
+            Path: /chat
+            Method: post
 
 Outputs:
   # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
@@ -55,3 +67,9 @@ Outputs:
     Value: !GetAtt "RetrieveChatFunction.Arn"
   RetrieveChatFunctionIamRole:
     Value: !GetAtt RetrieveChatFunctionRole.Arn
+  PostChatApi:
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/chat/"
+  PostChatFunction:
+    Value: !GetAtt "PostChatFunction.Arn"
+  PostChatFunctionIamRole:
+    Value: !GetAtt PostChatFunctionIamRole.Arn

@@ -9,4 +9,4 @@ functions = ["HelloWorldFunction"]
 [build_definitions.0d3851fc-57dc-47ba-ac53-d2eeeca7ff6b]
 codeuri = "chat/"
 runtime = "python3.8"
-functions = ["RetrieveChatFunction"]
+functions = ["RetrieveChatFunction", "PostChatFunction"]
