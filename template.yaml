@@ -42,7 +42,7 @@ Resources:
       Handler: app.postChat
       Runtime: python3.8
       Events:
-        RetrieveChat:
+        PostChat:
           Type: Api
           Properties:
             Path: /chat
@@ -64,12 +64,12 @@ Outputs:
   RetrieveChatApi:
     Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/chat/"
   RetrieveChatFunction:
-    Value: !GetAtt "RetrieveChatFunction.Arn"
+    Value: !GetAtt RetrieveChatFunction.Arn
   RetrieveChatFunctionIamRole:
     Value: !GetAtt RetrieveChatFunctionRole.Arn
   PostChatApi:
     Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/chat/"
   PostChatFunction:
-    Value: !GetAtt "PostChatFunction.Arn"
+    Value: !GetAtt PostChatFunction.Arn
   PostChatFunctionIamRole:
-    Value: !GetAtt PostChatFunctionIamRole.Arn
+    Value: !GetAtt PostChatFunctionRole.Arn
