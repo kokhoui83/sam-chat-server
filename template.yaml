@@ -33,7 +33,7 @@ Resources:
         RetrieveChat:
           Type: Api
           Properties:
-            Path: /chats
+            Path: /chat
             Method: get
 
 Outputs:
@@ -49,3 +49,9 @@ Outputs:
   HelloWorldFunctionIamRole:
     Description: "Implicit IAM Role created for Hello World function"
     Value: !GetAtt HelloWorldFunctionRole.Arn
+  RetrieveChatApi:
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/chat/"
+  RetrieveChatFunction:
+    Value: !GetAtt "RetrieveChatFunction.Arn"
+  RetrieveChatFunctionIamRole:
+    Value: !GetAtt RetrieveChatFunctionRole.Arn
