@@ -27,7 +27,7 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: chat/
-      Handler: app.lambda_handler
+      Handler: app.getChats
       Runtime: python3.8
       Events:
         RetrieveChat:

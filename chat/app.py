@@ -2,7 +2,7 @@ import json
 
 from database import retrieveChat
 
-def lambda_handler(event, context):
+def getChats(event, context):
     chats = retrieveChat()
     return {
         "statusCode": 200,
