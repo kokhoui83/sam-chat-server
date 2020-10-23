@@ -23,14 +23,14 @@ Resources:
           Properties:
             Path: /hello
             Method: get
-  RetrieveChatFunction:
+  GetChatFunction:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: chat/
       Handler: app.getChat
       Runtime: python3.8
       Events:
-        RetrieveChat:
+        GetChat:
           Type: Api
           Properties:
             Path: /chat
@@ -61,12 +61,12 @@ Outputs:
   HelloWorldFunctionIamRole:
     Description: "Implicit IAM Role created for Hello World function"
     Value: !GetAtt HelloWorldFunctionRole.Arn
-  RetrieveChatApi:
+  GetChatApi:
     Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/chat/"
-  RetrieveChatFunction:
-    Value: !GetAtt RetrieveChatFunction.Arn
-  RetrieveChatFunctionIamRole:
-    Value: !GetAtt RetrieveChatFunctionRole.Arn
+  GetChatFunction:
+    Value: !GetAtt GetChatFunction.Arn
+  GetChatFunctionIamRole:
+    Value: !GetAtt GetChatFunctionRole.Arn
   PostChatApi:
     Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/chat/"
   PostChatFunction:
