@@ -23,6 +23,18 @@ Resources:
           Properties:
             Path: /hello
             Method: get
+  RetrieveChatFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: chat/
+      Handler: app.lambda_handler
+      Runtime: python3.8
+      Events:
+        RetrieveChat:
+          Type: Api
+          Properties:
+            Path: /chats
+            Method: get
 
 Outputs:
   # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
