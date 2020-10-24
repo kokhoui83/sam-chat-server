@@ -3,7 +3,11 @@ import json
 from database import retrieveChat, createChat
 
 def getChat(event, context):
-    chats = retrieveChat()
+    qs = event['queryStringParameters']
+    user = qs['user']
+
+    chats = retrieveChat(user)
+
     return {
         "statusCode": 200,
         "body": json.dumps({
