@@ -1,6 +1,6 @@
 import json
 
-from database import retrieveChat
+from database import retrieveChat, createChat
 
 def getChat(event, context):
     chats = retrieveChat()
@@ -13,6 +13,14 @@ def getChat(event, context):
     }
 
 def postChat(event, context):
+    body = event['body']
+
+    data = json.loads(body)
+    user = data['user']
+    message = data['message']
+
+    createChat(user, message)
+
     return {
         "statusCode": 201,
         "body": json.dumps({
