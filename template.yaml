@@ -47,6 +47,13 @@ Resources:
           Properties:
             Path: /chat
             Method: post
+  ChatDBTable:
+    Type: AWS::Serverless::SimpleTable
+    Properties:
+      PrimaryKey:
+        Name: user
+        Type: String
+      TableName: chat-table
 
 Outputs:
   # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
