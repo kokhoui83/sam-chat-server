@@ -29,6 +29,7 @@ Resources:
       CodeUri: chat/
       Handler: app.getChat
       Runtime: python3.8
+      Policies: AWSLambdaFullAccess
       Events:
         GetChat:
           Type: Api
@@ -41,19 +42,31 @@ Resources:
       CodeUri: chat/
       Handler: app.postChat
       Runtime: python3.8
+      Policies: AWSLambdaFullAccess
       Events:
         PostChat:
           Type: Api
           Properties:
             Path: /chat
             Method: post
+  # ChatDBTable:
+  #   Type: AWS::Serverless::SimpleTable
+  #   Properties:
+  #     PrimaryKey:
+  #       Name: user
+  #       Type: String
+  #     TableName: chat-table
   ChatDBTable:
-    Type: AWS::Serverless::SimpleTable
+    Type: AWS::DynamoDB::Table
     Properties:
-      PrimaryKey:
-        Name: user
-        Type: String
       TableName: chat-table
+      AttributeDefinitions:
+        - AttributeName: user
+          AttributeType: S
+      KeySchema:
+        - AttributeName: user
+          KeyType: HASH
+      BillingMode: PAY_PER_REQUEST
 
 Outputs:
   # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
