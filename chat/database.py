@@ -24,7 +24,7 @@ else:
 
 try:
     response = dynamodb.create_table(
-        TableName = 'chats-table',
+        TableName = 'chat-table',
         BillingMode = 'PAY_PER_REQUEST',
         AttributeDefinitions = [
             {
@@ -49,13 +49,13 @@ except Exception as e:
 
 def retrieveAllChatDb(user):
     response = dynamodb.scan(
-        TableName = 'chats-table'
+        TableName = 'chat-table'
     )
     print(response)
 
 def createChatDb(user, message):
     response = dynamodb.put_item(
-        TableName = 'chats-table',
+        TableName = 'chat-table',
         ReturnConsumedCapacity = 'TOTAL',
         Item = {
             'user': { 'S': user },
