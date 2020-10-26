@@ -47,6 +47,12 @@ except Exception as e:
     print('fail to create table')
     print(e)
 
+def retrieveAllChatDb(user):
+    response = dynamodb.scan(
+        TableName = 'chats-table'
+    )
+    print(response)
+
 def createChatDb(user, message):
     response = dynamodb.put_item(
         TableName = 'chats-table',
@@ -59,6 +65,7 @@ def createChatDb(user, message):
     print(response)
 
 def retrieveChat(user):
+    retrieveAllChatDb(user)
     return { 'ali': 'hi!', 'boon': 'yo', 'rosy': 'hi hi' }
 
 def createChat(user, message):
