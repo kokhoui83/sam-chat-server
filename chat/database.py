@@ -22,23 +22,30 @@ if 'AWS_SAM_LOCAL' in os.environ and os.environ['AWS_SAM_LOCAL']:
 else:
     dynamodb = boto3.client('dynamodb')
 
-response = dynamodb.create_table(
-    TableName = 'chats-table',
-    BillingMode = 'PAY_PER_REQUEST',
-    AttributeDefinitions = [
-        {
-            'AttributeName': 'user',
-            'AttributeType': 'S'
-        }
-    ],
-    KeySchema = [
-        {
-            'AttributeName': 'user',
-            'KeyType': 'HASH'
-        }
-    ]
-)
-print(response)
+try:
+    response = dynamodb.create_table(
+        TableName = 'chats-table',
+        BillingMode = 'PAY_PER_REQUEST',
+        AttributeDefinitions = [
+            {
+                'AttributeName': 'user',
+                'AttributeType': 'S'
+            }
+        ],
+        KeySchema = [
+            {
+                'AttributeName': 'user',
+                'KeyType': 'HASH'
+            }
+        ]
+    )
+    print(response)
+except dynamodb.exceptions.ResourceInUseException:
+    print('table already exist')
+    pass
+except Exception as e:
+    print('fail to create table')
+    print(e)
 
 def retrieveChat(user):
     return { 'ali': 'hi!', 'boon': 'yo', 'rosy': 'hi hi' }
