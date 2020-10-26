@@ -47,6 +47,17 @@ except Exception as e:
     print('fail to create table')
     print(e)
 
+def createChatDb(user, message):
+    response = dynamodb.put_item(
+        TableName = 'chats-table',
+        ReturnConsumedCapacity = 'TOTAL',
+        Item = {
+            'user': { 'S': user },
+            'message': { 'S': message }
+        }
+    )
+    print(response)
+
 def retrieveChat(user):
     return { 'ali': 'hi!', 'boon': 'yo', 'rosy': 'hi hi' }
 
@@ -54,4 +65,5 @@ def createChat(user, message):
     # chat = ChatModel(user, message=message)
     # chat.save()
     # print(ChatModel.count())
+    createChatDb(user, message)
     print({ 'user': user, 'message': message })
