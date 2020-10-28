@@ -1,5 +1,5 @@
 import json
-
+from datetime import datetime
 from database import retrieveChat, createChat
 
 def getChat(event, context):
@@ -23,13 +23,20 @@ def getChat(event, context):
 
     user = qs['user']
 
-    chats = retrieveChat(user)
+    if 'lastupdate' in qs:
+        lastupdate = qs['lastupdate']
+    else:
+        lastupdate = int(datetime.utcnow().timestamp())
+
+    current = int(datetime.utcnow().timestamp())
+    chats = retrieveChat(user, lastupdate)
 
     return {
         'statusCode': 200,
         'body': json.dumps({
             'status': 'ok',
-            'chats': chats
+            'chats': chats,
+            'lastupdate': current
         })
     }
 

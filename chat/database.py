@@ -1,76 +1,109 @@
 import os
-import boto3
-# from pynamodb.models import Model
-# from pynamodb.attributes import UnicodeAttribute
+# import boto3
+from datetime import datetime
+from pynamodb.models import Model
+from pynamodb.attributes import UnicodeAttribute, UTCDateTimeAttribute, NumberAttribute
+from pynamodb.indexes import GlobalSecondaryIndex, AllProjection
 
-# class ChatModel(Model):
-#     class Meta:
-#         table_name = 'chat-table'
-#         if 'AWS_SAM_LOCAL' in os.environ and os.environ['AWS_SAM_LOCAL']:
-#             print('using local dynamodb')
-#             host = 'http://dynamodb-local:8000'
-#     user = UnicodeAttribute(hash_key=True)
-#     message = UnicodeAttribute()
+class ChatModel(Model):
+    class Meta:
+        table_name = 'chat-table'
+        if 'AWS_SAM_LOCAL' in os.environ and os.environ['AWS_SAM_LOCAL']:
+            print('using local dynamodb')
+            host = 'http://dynamodb-local:8000'
+    
+    class TimeStampIndex(GlobalSecondaryIndex):
+        class Meta:
+            index_name = 'timestamp-index'
+            read_capacity_units = 2
+            write_capacity_units = 1
+            projection = AllProjection()
+        timestamp = NumberAttribute(hash_key=True)
+    
+    user = UnicodeAttribute(hash_key=True)
+    timestamp = NumberAttribute(range_key=True)
+    message = UnicodeAttribute()
+    timestamp_index = TimeStampIndex()
 
-# try:
-#     ChatModel.create_table(wait=True, billing_mode='on_demand')
-# except:
-#     print('Failed to create table')
+    def as_dict(self):
+        '''
+        Takes the current model and reviews the attributes to then translate to a dict
+        '''
+        return {key: getattr(self, key) for key in self.get_attributes().keys()}
 
-if 'AWS_SAM_LOCAL' in os.environ and os.environ['AWS_SAM_LOCAL']:
-    dynamodb = boto3.client('dynamodb', endpoint_url='http://dynamodb-local:8000')
-else:
-    dynamodb = boto3.client('dynamodb')
 
 try:
-    response = dynamodb.create_table(
-        TableName = 'chat-table',
-        BillingMode = 'PAY_PER_REQUEST',
-        AttributeDefinitions = [
-            {
-                'AttributeName': 'user',
-                'AttributeType': 'S'
-            }
-        ],
-        KeySchema = [
-            {
-                'AttributeName': 'user',
-                'KeyType': 'HASH'
-            }
-        ]
-    )
-    print(response)
-except dynamodb.exceptions.ResourceInUseException:
-    print('table already exist')
-    pass
+    print(ChatModel.exists())
+    if not ChatModel.exists():
+        print('creating table...')
+        ChatModel.create_table(wait=True, billing_mode='PAY_PER_REQUEST')
 except Exception as e:
-    print('fail to create table')
+    print('Failed to create table')
     print(e)
 
-def retrieveAllChatDb(user):
-    response = dynamodb.scan(
-        TableName = 'chat-table'
-    )
-    print(response)
+# if 'AWS_SAM_LOCAL' in os.environ and os.environ['AWS_SAM_LOCAL']:
+#     dynamodb = boto3.client('dynamodb', endpoint_url='http://dynamodb-local:8000')
+# else:
+#     dynamodb = boto3.client('dynamodb')
 
-def createChatDb(user, message):
-    response = dynamodb.put_item(
-        TableName = 'chat-table',
-        ReturnConsumedCapacity = 'TOTAL',
-        Item = {
-            'user': { 'S': user },
-            'message': { 'S': message }
-        }
-    )
-    print(response)
+# try:
+#     response = dynamodb.create_table(
+#         TableName = 'chat-table',
+#         BillingMode = 'PAY_PER_REQUEST',
+#         AttributeDefinitions = [
+#             {
+#                 'AttributeName': 'user',
+#                 'AttributeType': 'S'
+#             }
+#         ],
+#         KeySchema = [
+#             {
+#                 'AttributeName': 'user',
+#                 'KeyType': 'HASH'
+#             }
+#         ]
+#     )
+#     print(response)
+# except dynamodb.exceptions.ResourceInUseException:
+#     print('table already exist')
+#     pass
+# except Exception as e:
+#     print('fail to create table')
+#     print(e)
 
-def retrieveChat(user):
-    retrieveAllChatDb(user)
-    return { 'ali': 'hi!', 'boon': 'yo', 'rosy': 'hi hi' }
+# def retrieveAllChatDb(user):
+#     response = dynamodb.scan(
+#         TableName = 'chat-table'
+#     )
+#     print(response)
+
+# def createChatDb(user, message):
+#     response = dynamodb.put_item(
+#         TableName = 'chat-table',
+#         ReturnConsumedCapacity = 'TOTAL',
+#         Item = {
+#             'user': { 'S': user },
+#             'message': { 'S': message }
+#         }
+#     )
+#     print(response)
+
+def retrieveChat(user, lastupdate):
+    # print({ user, lastupdate })
+    chats = []
+    for chat in ChatModel.scan():
+        chats.append(chat.as_dict())
+
+    return chats
 
 def createChat(user, message):
-    # chat = ChatModel(user, message=message)
-    # chat.save()
+    try:
+        timestamp = int(int(datetime.utcnow().timestamp()))
+        chat = ChatModel(user, timestamp=timestamp, message=message)
+        chat.save()
+    except Exception as e:
+        print(e)
+        raise Exception('Failed to save chat')
     # print(ChatModel.count())
-    createChatDb(user, message)
-    print({ 'user': user, 'message': message })
+
+    return chat.as_dict()
