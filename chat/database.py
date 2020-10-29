@@ -39,6 +39,7 @@ def retrieveChat(user, lastupdate):
     return chats
 
 def createChat(user, message):
+    MAX_CHAT = 20
     try:
         timestamp = int(datetime.utcnow().timestamp())
         chat = ChatModel(user, timestamp=timestamp, message=message)
@@ -46,5 +47,15 @@ def createChat(user, message):
     except Exception as e:
         print(e)
         raise Exception('Failed to screate chat')
+
+    total = ChatModel.count(user)
+
+    if total > MAX_CHAT:
+        for oldchat in ChatModel.query(user, limit = total - MAX_CHAT):
+            try:
+                oldchat.delete()
+            except Exception as e:
+                print('Failed to delete old chat')
+                pass
 
     return chat.as_dict()
