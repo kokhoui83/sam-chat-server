@@ -21,7 +21,7 @@ class ChatModel(Model):
         timestamp = NumberAttribute(hash_key=True)
     
     user = UnicodeAttribute(hash_key=True)
-    timestamp = NumberAttribute(range_key=True)
+    timestamp = NumberAttribute(range_key=True, default=0)
     message = UnicodeAttribute()
     timestamp_index = TimeStampIndex()
 
@@ -91,15 +91,16 @@ except Exception as e:
 def retrieveChat(user, lastupdate):
     # print({ user, lastupdate })
     chats = []
-    for chat in ChatModel.scan():
+    for chat in ChatModel.scan(ChatModel.timestamp > lastupdate):
         chats.append(chat.as_dict())
 
     return chats
 
 def createChat(user, message):
     try:
-        timestamp = int(int(datetime.utcnow().timestamp()))
+        timestamp = int(datetime.utcnow().timestamp())
         chat = ChatModel(user, timestamp=timestamp, message=message)
+        print(chat.as_dict())
         chat.save()
     except Exception as e:
         print(e)

@@ -24,7 +24,7 @@ def getChat(event, context):
     user = qs['user']
 
     if 'lastupdate' in qs:
-        lastupdate = qs['lastupdate']
+        lastupdate = int(qs['lastupdate'])
     else:
         lastupdate = int(datetime.utcnow().timestamp())
 

@@ -1,2 +1,2 @@
-boto3
-pynamodb
+boto3==1.16.4
+pynamodb==4.3.3
