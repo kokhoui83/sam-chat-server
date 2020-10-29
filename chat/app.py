@@ -64,11 +64,12 @@ def postChat(event, context):
     user = data['user']
     message = data['message']
 
-    createChat(user, message)
+    chat = createChat(user, message)
 
     return {
         'statusCode': 201,
         'body': json.dumps({
-            'status': 'ok'
+            'status': 'ok',
+            'chat': chat
         })
     }

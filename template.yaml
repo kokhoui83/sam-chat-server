@@ -65,13 +65,6 @@ Resources:
           KeyType: HASH
         - AttributeName: timestamp
           KeyType: RANGE
-      GlobalSecondaryIndexes:
-        - IndexName: timestamp-index
-          KeySchema:
-            - AttributeName: timestamp
-              KeyType: HASH
-          Projection:
-            ProjectionType: ALL
 
 Outputs:
   # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
