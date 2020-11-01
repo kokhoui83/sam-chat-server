@@ -21,10 +21,41 @@ class ChatModel(Model):
         '''
         return { key: getattr(self, key) for key in self.get_attributes().keys() }
 
+class ChatAuditModel(Model):
+    class Meta:
+        table_name = 'chat-audit-table'
+        if 'AWS_SAM_LOCAL' in os.environ and os.environ['AWS_SAM_LOCAL']:
+            print('using local dynamodb')
+            host = 'http://dynamodb-local:8000'
+        
+    key = UnicodeAttribute(hash_key=True)
+    value = NumberAttribute(default=0)
+    timestamp = NumberAttribute(default=0)
+
+    def as_dict(self):
+        '''
+        Takes the current model and reviews the attributes to then translate to a dict
+        '''
+        return { key: getattr(self, key) for key in self.get_attributes().keys() }
+
 try:
     if not ChatModel.exists():
-        print('Creating table...')
+        print('Creating chat table...')
         ChatModel.create_table(wait=True, billing_mode='PAY_PER_REQUEST')
+    
+    if not ChatAuditModel.exists():
+        print('Creating chat audit table...')
+        ChatAuditModel.create_table(wait=True, billing_mode='PAY_PER_REQUEST')
+        
+    try:
+        ChatAuditModel.get('chat_count')
+    except ChatAuditModel.DoesNotExist:
+        chatcount = ChatAuditModel('chat_count')
+        chatcount.save()
+    except Exception as e:
+        print('Failed to create chat_count')
+        pass
+
 except Exception as e:
     print('Failed to create table', e)
 
@@ -45,14 +76,47 @@ def createChat(user, message):
         print('Failed to save chat', e)
         raise Exception('Failed to create chat')
 
+    incrementCount()
+
     total = ChatModel.count(user)
 
     if total > MAX_CHAT:
         for oldchat in ChatModel.query(user, limit = total - MAX_CHAT):
             try:
                 oldchat.delete()
+                decrementCount()
             except Exception as e:
                 print('Failed to delete old chat', e)
                 pass
 
     return chat.as_dict()
+
+def getChatCount():
+    try:
+        chatcount = ChatAuditModel.get('chat_count')
+        return chatcount.as_dict()
+    except Exception as e:
+        print('Failed to get chat count', e)
+        raise e
+
+def incrementCount():
+    try:
+        chatcount = ChatAuditModel.get('chat_count')
+        chatcount.update(actions=[
+            ChatAuditModel.value.set(ChatAuditModel.value + 1),
+            ChatAuditModel.timestamp.set(int(datetime.utcnow().timestamp()))
+        ])
+    except Exception as e:
+        print('Failed to update chat count', e)
+        pass
+
+def decrementCount():
+    try:
+        chatcount = ChatAuditModel.get('chat_count')
+        chatcount.update(actions=[
+            ChatAuditModel.value.set(ChatAuditModel.value - 1),
+            ChatAuditModel.timestamp.set(int(datetime.utcnow().timestamp()))
+        ])
+    except Exception as e:
+        print('Failed to update chat count', e)
+        pass

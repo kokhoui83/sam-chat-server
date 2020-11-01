@@ -49,6 +49,19 @@ Resources:
           Properties:
             Path: /chat
             Method: post
+  GetChatCountFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: chat/
+      Handler: app.chatCount
+      Runtime: python3.8
+      Policies: AWSLambdaFullAccess
+      Events:
+        GetChat:
+          Type: Api
+          Properties:
+            Path: /chatcount
+            Method: get
 
   ChatDBTable:
     Type: AWS::DynamoDB::Table
@@ -65,6 +78,18 @@ Resources:
           KeyType: HASH
         - AttributeName: timestamp
           KeyType: RANGE
+  
+  ChatAuditTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: chat-audit-table
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: key
+          AttributeType: S
+      KeySchema:
+        - AttributeName: key
+          KeyType: HASH
 
 Outputs:
   # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
@@ -80,14 +105,29 @@ Outputs:
     Description: "Implicit IAM Role created for Hello World function"
     Value: !GetAtt HelloWorldFunctionRole.Arn
   GetChatApi:
+    Description: ""
     Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/chat/"
   GetChatFunction:
+    Description: ""
     Value: !GetAtt GetChatFunction.Arn
   GetChatFunctionIamRole:
+    Description: ""
     Value: !GetAtt GetChatFunctionRole.Arn
   PostChatApi:
+    Description: ""
     Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/chat/"
   PostChatFunction:
+    Description: ""
     Value: !GetAtt PostChatFunction.Arn
   PostChatFunctionIamRole:
+    Description: ""
     Value: !GetAtt PostChatFunctionRole.Arn
+  GetChatCountApi:
+    Description: ""
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/chatcount/"
+  GetChatCountFunction:
+    Description: ""
+    Value: !GetAtt GetChatCountFunction.Arn
+  GetChatCountFunctionIamRole:
+    Description: ""
+    Value: !GetAtt GetChatCountFunctionRole.Arn

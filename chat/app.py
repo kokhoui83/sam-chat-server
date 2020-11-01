@@ -1,6 +1,6 @@
 import json
 from datetime import datetime
-from database import retrieveChat, createChat
+from database import retrieveChat, createChat, getChatCount
 
 def getChat(event, context):
     qs = event['queryStringParameters']
@@ -86,5 +86,23 @@ def postChat(event, context):
             'statusCode': 500,
             'body': json.dumps({
                 'error': 'server error - failed to create chat message'
+            })
+        }
+
+def chatCount(event, context):
+    try:
+        count = getChatCount()
+
+        return {
+            'statusCode': 200,
+            'body': json.dumps({
+                'total': count['value']
+            })
+        }
+    except Exception:
+        return {
+            'statusCode': 500,
+            'body': json.dumps({
+                'error': 'server error - failed to get chat count'
             })
         }
