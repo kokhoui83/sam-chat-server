@@ -19,17 +19,14 @@ class ChatModel(Model):
         '''
         Takes the current model and reviews the attributes to then translate to a dict
         '''
-        return {key: getattr(self, key) for key in self.get_attributes().keys()}
-
+        return { key: getattr(self, key) for key in self.get_attributes().keys() }
 
 try:
-    print(ChatModel.exists())
     if not ChatModel.exists():
         print('Creating table...')
         ChatModel.create_table(wait=True, billing_mode='PAY_PER_REQUEST')
 except Exception as e:
-    print('Failed to create table')
-    print(e)
+    print('Failed to create table', e)
 
 def retrieveChat(user, lastupdate):
     chats = []
@@ -45,8 +42,8 @@ def createChat(user, message):
         chat = ChatModel(user, timestamp=timestamp, message=message)
         chat.save()
     except Exception as e:
-        print(e)
-        raise Exception('Failed to screate chat')
+        print('Failed to save chat', e)
+        raise Exception('Failed to create chat')
 
     total = ChatModel.count(user)
 
@@ -55,7 +52,7 @@ def createChat(user, message):
             try:
                 oldchat.delete()
             except Exception as e:
-                print('Failed to delete old chat')
+                print('Failed to delete old chat', e)
                 pass
 
     return chat.as_dict()

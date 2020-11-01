@@ -5,6 +5,7 @@ from database import retrieveChat, createChat
 def getChat(event, context):
     qs = event['queryStringParameters']
 
+    # return error 400 if missing parameter
     if qs is None:
         return {
             'statusCode': 400,
@@ -13,6 +14,7 @@ def getChat(event, context):
             })
         }
 
+    # return error 400 if missing user param
     if not 'user' in qs:
         return {
             'statusCode': 400,
@@ -23,12 +25,15 @@ def getChat(event, context):
 
     user = qs['user']
 
+    # get lastupdate parameter, else use current time
     if 'lastupdate' in qs:
         lastupdate = int(qs['lastupdate'])
     else:
         lastupdate = int(datetime.utcnow().timestamp())
 
+    # store current query time
     current = int(datetime.utcnow().timestamp())
+    # get all chat since lastupdate
     chats = retrieveChat(user, lastupdate)
 
     return {
@@ -43,6 +48,7 @@ def getChat(event, context):
 def postChat(event, context):
     body = event['body']
 
+    # return error 400 if no post body
     if body is None:
         return {
             'statusCode': 400,
@@ -53,6 +59,7 @@ def postChat(event, context):
 
     data = json.loads(body)
 
+    # return error 400 if missing user or message in post body
     if not 'user' in data or not 'message' in data:
         return {
             'statusCode': 400,
@@ -64,12 +71,20 @@ def postChat(event, context):
     user = data['user']
     message = data['message']
 
-    chat = createChat(user, message)
+    try:
+        chat = createChat(user, message)
 
-    return {
-        'statusCode': 201,
-        'body': json.dumps({
-            'status': 'ok',
-            'chat': chat
-        })
-    }
+        return {
+            'statusCode': 201,
+            'body': json.dumps({
+                'status': 'ok',
+                'chat': chat
+            })
+        }
+    except Exception:
+        return {
+            'statusCode': 500,
+            'body': json.dumps({
+                'error': 'server error - failed to create chat message'
+            })
+        }
