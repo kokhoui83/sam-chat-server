@@ -1,5 +1,5 @@
 # flake8: noqa
-from behave import *
+from behave import given, when, then
 
 @given('we have behave installed')
 def step_impl(context):
