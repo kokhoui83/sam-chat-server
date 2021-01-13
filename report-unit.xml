@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites><testsuite name="pytest" errors="1" failures="0" skipped="0" tests="1" time="0.060" timestamp="2021-01-13T09:55:01.358682" hostname="DESKTOP-5D1KSC3"><testcase classname="" name="tests.unit.hello_world.test_handler" time="0.000"><error message="collection failure">ImportError while importing test module '/home/brian/code/personal/sam-chat-server/tests/unit/hello_world/test_handler.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/usr/lib/python3.8/importlib/__init__.py:127: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+tests/unit/hello_world/test_handler.py:5: in &lt;module&gt;
+    from hello_world import app
+E   ImportError: cannot import name 'app' from 'hello_world' (/home/brian/code/personal/sam-chat-server/tests/unit/hello_world/__init__.py)</error></testcase></testsuite></testsuites>

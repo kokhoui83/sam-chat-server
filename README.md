@@ -64,5 +64,5 @@ sam local start-api --docker-network network
 
 ## Run test
 ```
-python -m pytest tests/ -v
+PYTHONPATH=$(pwd):$(pwd)/chat pytest -v
 ```
