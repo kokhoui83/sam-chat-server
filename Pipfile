@@ -12,6 +12,7 @@ requests = "*"
 pytest = "*"
 pre-commit = "*"
 flake8 = "*"
+behave = "*"
 
 [requires]
 python_version = "3.8"
